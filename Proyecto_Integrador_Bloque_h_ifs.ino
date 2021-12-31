@@ -1,47 +1,26 @@
-/*
-  Realizamos un programa para leer los datos recibidos a traves de un control remoto 
-  y los vamos a colocar en una tabla para su posterior uso
-*/
-
-
 
 #include <IRremote.h>
 #include <IRremoteInt.h>
 
-
-/*INICIO VARIABLES
-
-  Para deteccion de errores usaremos el led integrado del pin 13.
-  La entrada será el pin 2 (donde arduino detectará una interrupción y va a leer el codigo recibido del control remoto
-  con ayuda de la librería)
-
-*/
 int LuzDelanteraIzquierda = 2;
 int LuzDelanteraDerecha= 4;
 int LuzTraseraIzquierda = 7;
 int LuzTraseraDerecha = 12;
 int ledTest = 13;
+
 int MemoryLastIf=0;
 double contador=0;
-/*
-   Seteo del receptor infrarojo
-*/
+
 int ReceptorIR = 8;                     // Declaramos que usaremos el pin 8 (asociado a la variable ReceptorIR) como entrada del control remoto. 
 IRrecv receptorIr(ReceptorIR);          // Creamos un objeto de la clase IRrecv llamado "receptorIr"
 
 decode_results codigoLeido;              //declaramos 2 variables de tipo decode_results llamadas "codigoLeido" y "codigoLeidoNuevo"
 decode_results codigoLeidoNuevo;
 
-
-//Definimos variables
-
 const int AIA = 3; 
 const int AIB = 11;
 const int BIA = 10; 
 const int BIB = 9;
-
-
-/*FIN VARIABLES*/
 
 void setup() {
 
@@ -81,13 +60,21 @@ void setup() {
 
 
 void loop() {  
-  if (receptorIr.decode(&codigoLeidoNuevo)){receptorIr.resume();
-  Serial.println(codigoLeidoNuevo.value, HEX); 
-  contador++;
+ if (receptorIr.decode(&codigoLeidoNuevo))
+  {
+   receptorIr.resume();
+   Serial.println(codigoLeidoNuevo.value, HEX); 
+   if(codigoLeidoNuevo==0xFFFFFF) 
+    {
+     contador=0;
+    } 
   }
-
+   if(MemoryLastIf != 0) 
+    {
+    contador++;
+    } 
   
-  if (contador < 1)
+  if (contador > 5)
   {
     MemoryLastIf=0;
     contador=0;
